@@ -1,0 +1,36 @@
+# General
+.gitignore
+.prettierignore
+.eslintcache
+node_modules/
+public/
+.husky/
+src/__generated__
+
+# Artifacts
+.next/
+
+# Editor
+/.vscode
+
+# Misc.
+.DS_Store
+*.cjs
+*.loader.mjs
+
+# Env
+.env.*
+
+# Vercel
+.vercel
+
+# Specific
+*.svg
+*.ico
+*.json
+*.md
+*.log
+*.lock
+*.tsbuildinfo
+*.config.js
+*.d.ts

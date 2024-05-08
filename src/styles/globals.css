@@ -1,3 +1,6 @@
+@import '~antd/dist/antd.css';
+@import '~tailwindcss/tailwind.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,26 +11,18 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: linear-gradient(to bottom, #0b101c, #213053);
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.ant-menu::before{
+  content: none !important;
+}
+.ant-menu::after{
+  content: none !important;
+}
+
+.ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left{
+  border-right: none !important;
 }
