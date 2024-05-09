@@ -111,7 +111,7 @@ export default function Home() {
           {secretKey as string}
         </div>
 
-        <p className="text-[#FF6464] mt-3">Don't share your secret key with anyone</p>
+        <p className="text-[#FF6464] mt-3">0{`Don't share your secret key with anyone`}</p>
         <div className="mt-10 flex justify-center gap-2">
           <Button
             onClick={handleShowWarningNewWallet}

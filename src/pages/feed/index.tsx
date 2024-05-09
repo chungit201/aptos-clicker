@@ -12,6 +12,8 @@ import { getData } from '@/common/hooks/useLocalstorage'
 const maxFoodAmount = 500
 
 const Page: React.FunctionComponent = () => {
+  const [sequenceNumber, setSequenceNumber] = useState('')
+  const [totalPlays, setTotalPlays] = useState(0)
   const [totalFood, setTotalFood] = useState(0)
   const { view } = useContract()
   const { aptosClient } = useClient()
@@ -22,11 +24,19 @@ const Page: React.FunctionComponent = () => {
       if (totalFood > 0) {
         setTotalFood(totalFood - 1)
       }
-    }, 3000)
+    }, 1000)
 
     //Clearing the interval
     return () => clearInterval(interval)
   }, [totalFood])
+
+  useEffect(() => {
+    ;(async () => {
+      const account = new AptosAccount(new HexString(secretKey).toUint8Array())
+      const genesisAccount = await aptosClient.getAccount(account.address())
+      setSequenceNumber(genesisAccount.sequence_number)
+    })()
+  }, [])
 
   const { data: isRegister = false } = useQuery({
     queryKey: ['isRegister'],
@@ -60,6 +70,10 @@ const Page: React.FunctionComponent = () => {
     },
   })
 
+  useEffect(() => {
+    setTotalPlays(current_plays)
+  }, [current_plays])
+
   const simulateTransaction = async (account: AptosAccount, rawTxn: any) => {
     const userTransactions = await aptosClient.simulateTransaction(account, rawTxn, {
       estimateGasUnitPrice: true,
@@ -86,9 +100,9 @@ const Page: React.FunctionComponent = () => {
       if (!simulate) {
         return
       }
-      const bcsTxn = await aptosClient.signTransaction(account, rawTxn)
-      const pendingTxn = await aptosClient.submitTransaction(bcsTxn)
-      const rs: any = await aptosClient.waitForTransactionWithResult(pendingTxn.hash)
+      const pendingTxn: any = await aptosClient.signAndSubmitTransaction(account, rawTxn)
+      console.log('pendingTxn', pendingTxn)
+      const rs: any = await aptosClient.waitForTransactionWithResult(pendingTxn)
       if (rs.success) {
         return true
       } else {
@@ -153,24 +167,29 @@ const Page: React.FunctionComponent = () => {
   }
 
   const handleClick = async (e: any) => {
+    setSequenceNumber(String(Number(sequenceNumber) + 1))
     try {
       if (!isRegister) {
         await handleRegister()
       }
       const account = new AptosAccount(new HexString(secretKey).toUint8Array())
-      const rawTxn = await aptosClient.generateTransaction(account.address(), {
-        function: `${CLICKER_RESOURCE_ACCOUNT}::clickr::play`,
-        type_arguments: [],
-        arguments: [],
-      })
-      const bcsTxn = await aptosClient.signTransaction(account, rawTxn)
-      const pendingTxn = await aptosClient.submitTransaction(bcsTxn)
-      const rs: any = await aptosClient.waitForTransactionWithResult(pendingTxn.hash)
-      if (rs.success) {
-        setTotalFood(totalFood + 1)
-        await refetch()
-        console.log('2222')
-        pop(e)
+      setTotalPlays(totalPlays + 1)
+      setTotalFood(totalFood + 1)
+      pop(e)
+      const rawTxn = await aptosClient.generateTransaction(
+        account.address(),
+        {
+          function: `${CLICKER_RESOURCE_ACCOUNT}::clickr::play`,
+          type_arguments: [],
+          arguments: [],
+        },
+        {
+          sequence_number: sequenceNumber,
+        },
+      )
+      const pendingTxn = await aptosClient.signAndSubmitTransaction(account, rawTxn)
+      if (pendingTxn) {
+        console.log('ok')
       }
     } catch (e: any) {
       console.log(e.message)
@@ -185,7 +204,7 @@ const Page: React.FunctionComponent = () => {
           <div>
             <Image className="w-[25px]" src={require('@/common/assets/images/coin.png')} alt="" />
           </div>
-          <Typography className="font-bold text-4xl text-[#fff] font-pacifico">{current_plays}</Typography>
+          <Typography className="font-bold text-4xl text-[#fff] font-pacifico">{totalPlays}</Typography>
         </div>
         <div className="flex justify-center mt-10">
           <Image

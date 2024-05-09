@@ -7,7 +7,7 @@ import { getData } from '@/common/hooks/useLocalstorage'
 import { NetworkContext } from '.'
 
 const NetworkContextProvider = ({ children }: PropsWithChildren) => {
-  const networkContext = useState<Network>((getData('network') as Network) ?? Network.MAINNET)
+  const networkContext = useState<Network>((getData('network') as Network) ?? Network.TESTNET)
 
   return <NetworkContext.Provider value={{ networkContext }}>{children}</NetworkContext.Provider>
 }
