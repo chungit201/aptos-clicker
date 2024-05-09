@@ -1,18 +1,25 @@
-import { Layout, Menu } from 'antd'
-import React, { useEffect, useState } from 'react'
-const { Header } = Layout
+import { Button, Layout, Menu } from 'antd'
+import { Network } from 'aptos'
 import { default as classNames, default as cx } from 'classnames'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import React, { useContext, useEffect, useState } from 'react'
 
 import { routes } from '@/common/components/Header/routers'
+import { NetworkContext } from '@/common/context'
 
 import styles from './Header.module.scss'
+
+const { Header } = Layout
 
 export const HeaderPage: React.FunctionComponent = () => {
   const [pageName, setPageName] = useState('')
   const router = useRouter()
+
+  const {
+    networkContext: [network, setNetwork],
+  } = useContext(NetworkContext)
 
   useEffect(() => {
     setPageName(router.pathname.replace('/', ''))
@@ -38,14 +45,14 @@ export const HeaderPage: React.FunctionComponent = () => {
               theme="light"
               className={cx(
                 styles.menu,
-                ' justify-start h-[75px] items-center min-w-[200px] w-full !bg-transparent hidden sm:flex',
+                ' justify-center h-[75px] items-center min-w-[200px] w-full !bg-transparent hidden sm:flex',
               )}
             >
               <Menu
                 theme="light"
                 className={cx(
                   styles.menu,
-                  ' justify-start h-[75px] items-center min-w-[200px] w-full !bg-transparent hidden sm:flex',
+                  ' justify-center h-[75px] items-center min-w-[200px] w-full !bg-transparent hidden sm:flex',
                 )}
               >
                 {routes.map(({ name, path }) => {
@@ -64,7 +71,26 @@ export const HeaderPage: React.FunctionComponent = () => {
               </Menu>
             </Menu>
           </div>
-          <div className=" h-full w-fit flex items-center gap-x-2"></div>
+          <div className=" h-full w-fit flex items-center gap-x-2">
+            <div className="bg-[#1A4E44] flex rounded-full p-1">
+              <Button
+                onClick={() => {
+                  setNetwork(Network.MAINNET)
+                }}
+                className={`${network === Network.MAINNET ? 'bg-[#6ADAB3] text-[#000]' : 'bg-transparent text-[#E6E6E6]'}  rounded-full border-0`}
+              >
+                Mainnet
+              </Button>
+              <Button
+                onClick={() => {
+                  setNetwork(Network.TESTNET)
+                }}
+                className={`${network === Network.TESTNET ? 'bg-[#6ADAB3] text-[#000]' : 'bg-transparent text-[#E6E6E6]'} border-0 rounded-full`}
+              >
+                Testnet
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </Header>

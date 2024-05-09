@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    CURRENT_NETWORK: process.env.CURRENT_NETWORK,
+    RPC_DEV: process.env.RPC_DEV,
+    RPC_STG: process.env.RPC_STG,
+    RPC_PROD: process.env.RPC_PROD,
+  },
   transpilePackages: [
     "antd",
     "@ant-design/plots",
